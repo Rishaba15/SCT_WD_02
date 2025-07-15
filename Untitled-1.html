@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stopwatch Web Application</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1e1e2f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 50px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .stopwatch {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #444;
+      color: #fff;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #666;
+    }
+
+    .laps {
+      width: 300px;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #2e2e40;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .lap {
+      border-bottom: 1px solid #555;
+      padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>⏱️ Stopwatch</h1>
+  <div class="stopwatch" id="display">00:00:00</div>
+
+  <div class="buttons">
+    <button onclick="startStopwatch()">Start</button>
+    <button onclick="pauseStopwatch()">Pause</button>
+    <button onclick="resetStopwatch()">Reset</button>
+    <button onclick="recordLap()">Lap</button>
+  </div>
+
+  <div class="laps" id="laps">
+    <strong>Lap Times:</strong>
+  </div>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+    const display = document.getElementById("display");
+    const laps = document.getElementById("laps");
+
+    function updateDisplay(time) {
+      const hours = Math.floor(time / 3600000);
+      const minutes = Math.floor((time % 3600000) / 60000);
+      const seconds = Math.floor((time % 60000) / 1000);
+
+      display.textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function startStopwatch() {
+      if (!timerInterval) {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(() => {
+          elapsedTime = Date.now() - startTime;
+          updateDisplay(elapsedTime);
+        }, 1000);
+      }
+    }
+
+    function pauseStopwatch() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function resetStopwatch() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      elapsedTime = 0;
+      updateDisplay(0);
+      laps.innerHTML = "<strong>Lap Times:</strong>";
+    }
+
+    function recordLap() {
+      if (elapsedTime > 0) {
+        const lapTime = display.textContent;
+        const lapElement = document.createElement("div");
+        lapElement.className = "lap";
+        lapElement.textContent = `Lap ${laps.children.length}: ${lapTime}`;
+        laps.appendChild(lapElement);
+      }
+    }
+  </script>
+
+</body>
+</html>
